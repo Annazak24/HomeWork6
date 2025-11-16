@@ -25,6 +25,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import waiters.Waiter;
 
 @Path("/catalog/courses")
 public class CatalogPage extends AbsBasePage {
@@ -69,6 +70,13 @@ public class CatalogPage extends AbsBasePage {
    }
 
    public List<CourseInfo> getAllCourses() {
+
+       Waiter waiter = new Waiter(driver);
+       By cardLocator = By.xpath("//a[contains(@class,'sc-zzdkm7-0')]");
+       waiter.waitForCondition(
+               ExpectedConditions.visibilityOfElementLocated(cardLocator)
+       );
+
       List<CourseInfo> courses = new ArrayList<>();
       List<WebElement> courseCards = driver.findElements(
           By.xpath("//a[contains(@class,'sc-zzdkm7-0')]"));
@@ -174,7 +182,6 @@ public class CatalogPage extends AbsBasePage {
 
 
    public String getCategoryName() {
-      String name = activeCategory.getText();
-      return name;
+       return activeCategory.getText();
    }
 }

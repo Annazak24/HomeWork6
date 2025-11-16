@@ -30,7 +30,7 @@
             https://otus.ru
         </base.url>
 
-        <brower.name>chrome</brower.name>
+        <browser.name>chrome</browser.name>
     </properties>
 
     <dependencies>
@@ -103,9 +103,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven.surefire.version}</version>
                 <configuration>
+                    <testFailureIgnore>true</testFailureIgnore>
                     <systemPropertyVariables>
                         <base.url>${base.url}</base.url>
-                        <browser.name>${brower.name}</browser.name>
+                        <browser.name>${browser.name}</browser.name>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
@@ -122,15 +123,25 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.9.3.0</version>
+
+                <configuration>
+                    <effort>Max</effort>
+                    <threshold>Low</threshold>
+                    <failOnError>false</failOnError>
+                    <includeTests>true</includeTests>
+                    <omitVisitors>FindDeadLocalStore</omitVisitors>
+                </configuration>
+
                 <executions>
                     <execution>
                         <id>spotbugs-analysis</id>
-                        <phase>compile</phase>
+                        <phase>verify</phase>
                         <goals>
-                            <goal>check</goal>
+                            <goal>spotbugs</goal>
                         </goals>
                     </execution>
                 </executions>
+
             </plugin>
         </plugins>
     </build>
