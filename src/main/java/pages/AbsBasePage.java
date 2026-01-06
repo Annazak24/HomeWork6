@@ -3,14 +3,16 @@ package pages;
 import annotations.Path;
 import commons.AbsCommon;
 import exceptions.PathNotFoundException;
+import jakarta.inject.Inject;
 import org.openqa.selenium.WebDriver;
+import support.GuiceScoped;
 
 public abstract class AbsBasePage<T> extends AbsCommon {
 
    private String baseUrl = System.getProperty("base.url");
-
-   public AbsBasePage(WebDriver driver) {
-      super(driver);
+@Inject
+   public AbsBasePage(GuiceScoped guiceScoped) {
+      super(guiceScoped.getDriver());
    }
 
 

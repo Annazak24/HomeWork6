@@ -3,15 +3,18 @@ package pages;
 import annotations.Path;
 import java.util.List;
 import java.util.Random;
+
+import jakarta.inject.Inject;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import support.GuiceScoped;
 
 @Path("/")
 public class MainPage extends AbsBasePage<MainPage> {
-
-   public MainPage(WebDriver driver) {
-      super(driver);
+@Inject
+   public MainPage(GuiceScoped guiceScoped) {
+      super(guiceScoped);
    }
 
 

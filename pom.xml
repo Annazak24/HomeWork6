@@ -18,13 +18,19 @@
         <junit.platform.version>1.10.2</junit.platform.version>
         <webdriver.version>6.3.2</webdriver.version>
         <guice.version>7.0.0</guice.version>
+        <assertj.version>3.27.3</assertj.version>
+        <cucumber.version>7.20.1</cucumber.version>
+        <junit-platform-suit.version>6.0.1</junit-platform-suit.version>
+        <junit-platform-suite-api.version>6.0.1</junit-platform-suite-api.version>
+        <cucumber-guice.version>7.20.1</cucumber-guice.version>
         <assertj.version>3.27.6</assertj.version>
 
-        <maven.version>3.14.0</maven.version>
-        <maven.compiler.target>24</maven.compiler.target>
-        <maven.compiler.source>24</maven.compiler.source>
 
-        <maven.surefire.version>3.5.3</maven.surefire.version>
+        <maven.version>3.13.0</maven.version>
+        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+
+        <maven.surefire.version>3.1.2</maven.surefire.version>
 
         <base.url>
             https://otus.ru
@@ -75,6 +81,35 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.17.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-guice</artifactId>
+            <version>${cucumber-guice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit-platform-engine</artifactId>
+            <version>7.20.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-java</artifactId>
+            <version>7.20.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite</artifactId>
+            <version>1.10.2</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import jakarta.inject.Inject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.openqa.selenium.By;
@@ -23,23 +25,32 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import support.GuiceScoped;
 import waiters.Waiter;
 
 @Path("/catalog/courses")
 public class CatalogPage extends AbsBasePage {
+    private final GuiceScoped guiceScoped;
 
-   public CatalogPage(WebDriver driver) {
-      super(driver);
-   }
+    @Inject
+    public CatalogPage(GuiceScoped guiceScoped) {
+        super(guiceScoped);
+        this.guiceScoped = guiceScoped;
 
-
+        PageFactory.initElements(guiceScoped.getDriver(), this);
+    }
    @FindBy(xpath = "//p[normalize-space(text())='Направление']" +
        "/ancestor::div[contains(@class,'sc-1w8jhjp-1')]" +
        "/following-sibling::div" +
        "//div[contains(@class,'sc-1fry39v-0') and @value='true']//label")
    private WebElement activeCategory;
+
+public  void openCatalogPage(){
+    guiceScoped.getDriver().get( System.getProperty("base.url") + "/catalog/courses");
+}
 
 
    public void clickCourseByName(String courseName) {
@@ -184,4 +195,45 @@ public class CatalogPage extends AbsBasePage {
    public String getCategoryName() {
        return activeCategory.getText();
    }
+
+    public void searchCoursesStartingFromDate(String date) {
+       CatalogPage catalogPage= new CatalogPage(guiceScoped);
+
+
+        LocalDate targetDate = LocalDate.parse(
+                date,
+                DateTimeFormatter.ofPattern("dd.MM.yyyy")
+        );
+
+        var filteredCourses = catalogPage.getAllCourses().stream()
+                .filter(course ->
+                        course.getDate() != null &&
+                                !course.getDate().isBefore(targetDate)
+                )
+                .toList();
+
+        guiceScoped.store(filteredCourses,"filteredCourses");
+    }
+
+
+    public void printCoursesInfoToConsole() {
+
+        List<?> courses = guiceScoped.retriver("filteredCourses");
+
+        if (courses == null || courses.isEmpty()) {
+            System.out.println("No courses found for the given date");
+            return;
+        }
+
+        System.out.println("Courses starting from selected date:");
+
+        courses.forEach(course -> {
+            var c = (dto.CourseInfo) course;
+            System.out.printf(
+                    "• %s | Start date: %s%n",
+                    c.getName(),
+                    c.getDate()
+            );
+        });
+    }
 }
