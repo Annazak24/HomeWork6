@@ -17,6 +17,6 @@ Feature: Course page
 
 
   Scenario: Find the cheapest and the most expensive preparatory courses
-    When I open "Preparatory courses" section
+    When I open Preparatory courses section
     And I find the cheapest and the most expensive course
     Then I print selected courses information to console

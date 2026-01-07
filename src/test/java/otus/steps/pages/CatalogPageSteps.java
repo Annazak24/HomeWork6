@@ -7,7 +7,7 @@ import io.cucumber.java.en.When;
 import pages.CatalogPage;
 import support.GuiceScoped;
 
-public class CoursesPageSteps {
+public class CatalogPageSteps {
 
     @Inject
     private CatalogPage catalogPage;
@@ -34,5 +34,14 @@ public class CoursesPageSteps {
     @Then("I print courses information to console")
     public void printCourses() {
         catalogPage.printCoursesInfoToConsole();
+    }
+
+    @When("I open Preparatory courses section")
+    public void openPreparatoryCourses()  {
+        catalogPage.setPreparatoryCheckboxChecked();
+    }
+    @Then("I print selected courses information to console")
+    public void printCoursesPrice(){
+        catalogPage.printPrices();
     }
 }
