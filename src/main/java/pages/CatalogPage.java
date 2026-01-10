@@ -7,18 +7,14 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jakarta.inject.Inject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -34,10 +30,9 @@ import waiters.Waiter;
 
 @Path("/catalog/courses")
 public class CatalogPage extends AbsBasePage {
-    private int maxPrice;
-    private int minPrice;
-    private List<Integer> prices = new ArrayList<>();
     private final GuiceScoped guiceScoped;
+    private CourseInfo cheapestCourse;
+    private CourseInfo mostExpensiveCourse;
 
     @Inject
     public CatalogPage(GuiceScoped guiceScoped) {
@@ -242,66 +237,101 @@ public class CatalogPage extends AbsBasePage {
         });
     }
 
-    public void setPreparatoryCheckboxChecked() {
+    public void clickPreparatoryCoursesLabel() {
 
-        WebElement checkbox = driver.findElement(
-                By.xpath("//input[@type='checkbox' and contains(@class,'sc-j40lj7-0')]")
-        );
+        By labelLocator = By.xpath(
+                "//label[contains(normalize-space(.),'Подготовительные')]");
 
-        ((JavascriptExecutor) driver).executeScript(
-                "arguments[0].checked = true;" +
-                        "arguments[0].dispatchEvent(new Event('change', { bubbles: true }));",
-                checkbox
-        );
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement label = wait.until(
+                ExpectedConditions.elementToBeClickable(labelLocator));
+
+        scrollAndHighlight(label);
+        label.click();
+
+        wait.until(
+                ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//p[contains(normalize-space(.),'Подготовительный')]")));
     }
 
 
-    public void collectPrices() {
+    public void findCheapestAndMostExpensiveCourses() {
 
-        List<Integer> prices = new ArrayList<>();
+        Waiter waiter = new Waiter(driver);
 
-// 1️⃣ Վերցնում ենք course list container-ը
-        WebElement coursesContainer = driver.findElement(
-                By.xpath("//div[contains(@class,'sc-18q05a6-1')]")
-        );
+        waiter.waitForCondition(
+                ExpectedConditions.presenceOfElementLocated(
+                        By.xpath("//p[contains(normalize-space(.),'Подготовительный')]")));
 
-// 2️⃣ Container-ի ներսից վերցնում ենք բոլոր course-ները
-        List<WebElement> courses = coursesContainer.findElements(
-                By.xpath(".//a[contains(@class,'sc-zzdkm7-0')]")
-        );
+        By cardLocator = By.xpath(
+                "//a[contains(@class,'sc-zzdkm7-0')" +
+                        " and .//p[contains(normalize-space(.),'Подготовительный')]]");
 
-// 3️⃣ Ցիկլով բացում ենք
-        for (int i = 0; i < courses.size(); i++) {
+        int cardsCount = driver.findElements(cardLocator).size();
 
-            // պարտադիր է վերագտնել DOM refresh-ի պատճառով
-            coursesContainer = driver.findElement(
-                    By.xpath("//div[contains(@class,'sc-18q05a6-1')]")
-            );
+        if (cardsCount == 0) {
+            throw new AssertionError("No preparatory courses found after filtering");
+        }
 
-            courses = coursesContainer.findElements(
-                    By.xpath(".//a[contains(@class,'sc-zzdkm7-0')]")
-            );
+        List<CourseInfo> courses = new ArrayList<>();
 
-            // React-friendly click
-            ((JavascriptExecutor) driver)
-                    .executeScript("arguments[0].click();", courses.get(i));
+        for (int i = 0; i < cardsCount; i++) {
 
-            // գինը
-            String priceText = driver.findElement(
-                    By.xpath("//div[contains(@class,'sc-153sikp-11')]")
-            ).getText();
+            WebElement card = driver.findElements(cardLocator).get(i);
 
-            prices.add(Integer.parseInt(priceText.replaceAll("\\D", "")));
+            String name = card.findElement(
+                    By.xpath(".//h6//div[contains(@class,'jEGzDf')]")
+            ).getText().trim();
+
+            scrollAndHighlight(card);
+            card.click();
+
+            Document doc = Jsoup.parse(driver.getPageSource());
+
+            String priceText = doc
+                    .select("div:matchesOwn(\\d+\\s*₽)")
+                    .first()
+                    .text();
+
+            int price = Integer.parseInt(priceText.replaceAll("\\D", ""));
+
+            courses.add(new CourseInfo(name, price));
 
             driver.navigate().back();
+
+            waiter.waitForCondition(
+                    ExpectedConditions.presenceOfElementLocated(cardLocator));
         }
+
+        CourseInfo cheapest = courses.stream()
+                .min(Comparator.comparingInt(CourseInfo::getPrice))
+                .orElseThrow();
+
+        CourseInfo mostExpensive = courses.stream()
+                .max(Comparator.comparingInt(CourseInfo::getPrice))
+                .orElseThrow();
+
+        guiceScoped.store(cheapest, "cheapestCourse");
+        guiceScoped.store(mostExpensive, "mostExpensiveCourse");
     }
 
-        public void printPrices() {
-            maxPrice = prices.stream().max(Integer::compareTo).get();
-            minPrice = prices.stream().min(Integer::compareTo).get();
 
-            System.out.println("The most expensive price is" + maxPrice);
-            System.out.println("The cheapest price is" + minPrice);
+    public void printSelectedCoursesInformation() {
+
+        CourseInfo cheapest = guiceScoped.retriver("cheapestCourse");
+        CourseInfo mostExpensive = guiceScoped.retriver("mostExpensiveCourse");
+
+        if (cheapest == null || mostExpensive == null) {
+            throw new IllegalStateException(
+                    "Cheapest/Most expensive courses not found in scenario context");
         }
+
+        System.out.println("Cheapest course:");
+        System.out.println("Title: " + cheapest.getName());
+        System.out.println("Price: " + cheapest.getPrice());
+
+        System.out.println("Most expensive course:");
+        System.out.println("Title: " + mostExpensive.getName());
+        System.out.println("Price: " + mostExpensive.getPrice());
     }
+}

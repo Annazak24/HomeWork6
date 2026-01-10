@@ -38,10 +38,16 @@ public class CatalogPageSteps {
 
     @When("I open Preparatory courses section")
     public void openPreparatoryCourses()  {
-        catalogPage.setPreparatoryCheckboxChecked();
+        catalogPage.clickPreparatoryCoursesLabel();
     }
+
+    @And("I find the cheapest and the most expensive course")
+    public void findExpensiveAndCheapCourses(){
+        catalogPage.findCheapestAndMostExpensiveCourses();
+    }
+
     @Then("I print selected courses information to console")
     public void printCoursesPrice(){
-        catalogPage.printPrices();
+        catalogPage.printSelectedCoursesInformation();
     }
 }

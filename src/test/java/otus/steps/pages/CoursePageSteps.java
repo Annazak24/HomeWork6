@@ -23,9 +23,4 @@ CoursePageSteps {
         String courseName= guiceScoped.retriver("courseName");
         assertThat(courseName = catalogPage.getCourseTitleByJsoup());
     }
-
-    @And("I find the cheapest and the most expensive course")
-    public void findExpensiveAndCheapCourses(){
-        catalogPage.collectPrices();
-    }
 }
