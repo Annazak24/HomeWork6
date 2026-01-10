@@ -1,58 +1,49 @@
 # UI Automated Testing Project for OTUS
 
-## Overview
-Automated UI tests for the OTUS learning platform (https://otus.ru) using Selenium WebDriver with Java. Implements Page Object Model with Google Guice DI.
+This repository contains UI automation tests for the **OTUS learning platform** (https://otus.ru)  
+using **Selenium WebDriver** with **Java**, **Cucumber BDD**, and **Page Object Model** with **Google Guice DI**. :contentReference[oaicite:1]{index=1}
 
-## Technology Stack
-- Java 24
-- Selenium WebDriver 4.36.0
-- JUnit Jupiter 5.10.2
-- WebDriverManager 6.3.2
-- Google Guice 7.0.0
-- AssertJ 3.27.6
-- JSoup 1.17.2
-- Maven 3.14.0
+---
 
-## Project Structure
-```
+## 📌 Overview
+
+This project automates end-to-end UI scenarios, including:
+
+* Searching for courses by exact name  
+* Finding earliest and latest courses  
+* Filtering and comparing preparatory courses (cheapest & most expensive) 
+
+The automation framework is built using BDD principles with Cucumber feature files written in Gherkin. :contentReference[oaicite:2]{index=2}
+
+---
+
+## 🚀 Technology Stack
+
+The project uses the following technologies:
+
+| Category | Technology |
+|----------|------------|
+| Language | Java 24 |
+| Test Framework | JUnit Jupiter 5 |
+| BDD | Cucumber |
+| Browser Automation | Selenium WebDriver 4 |
+| Dependency Injection | Google Guice |
+| HTML Parsing | Jsoup |
+| Build Tool | Maven |
+| Additional | WebDriverManager, AssertJ | :contentReference[oaicite:3]{index=3}
+
+---
+
+## 📁 Project Structure
 project/
 ├── src/
-│   ├── main/java/
-│   │   ├── pages/         # Page Object classes
-│   │   ├── extensions/    # JUnit extensions
-│   │   ├── annotations/   # Custom annotations
-│   │   ├── dto/           # Data Transfer Objects
-│   │   └── waiters/       # Custom wait conditions
-│   └── test/java/
-│       └── otus/          # Test scenarios
-└── pom.xml
-```
-
-## Test Scenarios
-1. **scenario1** — Verify course search by exact name
-2. **scenario2** — Find earliest and latest courses
-3. **scenario3** — Navigate categories and validate selection
-
-## Setup and Configuration
-
-### Prerequisites
-- JDK 24
-- Maven 3.x
-- Chrome browser (default)
-
-### Configuration Properties
-In `pom.xml`:
-- `base.url` (default: https://otus.ru)
-- `browser.name` (default: chrome)
-
-## Running Tests
-```bash
-# all tests
-mvn clean test
-
-# with profile
-mvn clean test -Pprod
-
-# specific test
-mvn clean test -Dtest=scenario1
-```
+│ ├── main/java/
+│ │ ├── pages/ # Page Object classes
+│ │ ├── extensions/ # JUnit extensions
+│ │ ├── annotations/ # Custom annotations
+│ │ ├── dto/ # Data Transfer Objects
+│ │ └── waiters/ # Custom wait utilities
+│ └── test/java/
+│ └── otus/ # Cucumber step definitions & runners
+├── pom.xml
+└── README.md
