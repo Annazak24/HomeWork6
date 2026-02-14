@@ -13,6 +13,7 @@ public class SubscriotionPageTest {
     private SubscriptionPage subscriptionPage;
 
     void scenario4() {
+
         subscriptionPage.open();
 
         Assertions.assertTrue(subscriptionPage.areSubscriptionsVisible());
