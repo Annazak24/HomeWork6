@@ -1,44 +1,27 @@
 package pages;
 
 import annotations.Path;
-import java.util.List;
-import java.util.Random;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 
-import jakarta.inject.Inject;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import support.GuiceScoped;
 
 @Path("/")
-public class MainPage extends AbsBasePage<MainPage> {
-@Inject
-   public MainPage(GuiceScoped guiceScoped) {
-      super(guiceScoped);
-   }
+public class MainPage extends AbsBasePage {
 
+    public MainPage(Page page) {
+        super(page);
+    }
 
-   @FindBy(xpath = "//span[text()=\"Обучение\"]")
-   private WebElement training;
+    public String getNewsLinkTitle(int index) {
+        return page.locator("[data-qa='NewsMainList'] a")
+                .nth(--index)
+                .innerText();
+    }
 
-   @FindBy(xpath = "//div[contains(@class, 'lhsLfs')]//a")
-   private List<WebElement> categories;
+    public void clickNewsLink(String title) {
+        page.getByRole(AriaRole.LINK,
+                        new Page.GetByRoleOptions().setName(title))
+                .click();
+    }
 
-
-   public MainPage hoverTraining() {
-      actions.moveToElement(training).perform();
-      return this;
-   }
-
-   public String clickRandomCategory() {
-      if (categories.isEmpty()) {
-         throw new IllegalStateException("No categories found");
-      }
-
-      int randomIndex = new Random().nextInt(categories.size());
-      String categoriesName = categories.get(randomIndex).getText();
-      categories.get(randomIndex).click();
-
-      return categoriesName;
-   }
 }

@@ -44,6 +44,6 @@ project/
 │ │ ├── dto/ # Data Transfer Objects
 │ │ └── waiters/ # Custom wait utilities
 │ └── test/java/
-│ └── otus/ # Cucumber step definitions & runners
+│ └── main / # Cucumber step definitions & runners
 ├── pom.xml
 └── README.md

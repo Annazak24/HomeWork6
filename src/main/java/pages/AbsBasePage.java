@@ -1,34 +1,35 @@
 package pages;
 
 import annotations.Path;
-import commons.AbsCommon;
-import exceptions.PathNotFoundException;
-import jakarta.inject.Inject;
-import org.openqa.selenium.WebDriver;
-import support.GuiceScoped;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.options.AriaRole;
 
-public abstract class AbsBasePage<T> extends AbsCommon {
+import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 
-   private String baseUrl = System.getProperty("base.url");
-@Inject
-   public AbsBasePage(GuiceScoped guiceScoped) {
-      super(guiceScoped.getDriver());
-   }
+public abstract class AbsBasePage {
 
+    protected Page page;
 
-   private String getPath() {
-      Class<T> clazz = (Class<T>) this.getClass();
-      if (clazz.isAnnotationPresent(Path.class)) {
-         Path pathObj = clazz.getDeclaredAnnotation(Path.class);
-         return pathObj.value();
-      }
+    public AbsBasePage(Page page) {
+        this.page = page;
+    }
 
-      throw new PathNotFoundException();
-   }
+    private String getPath() {
+        Class clazz = getClass();
+        if (clazz.isAnnotationPresent(Path.class)) {
+            Path path = (Path) clazz.getDeclaredAnnotation(Path.class);
+            return path.value();
+        }
 
-   public T open() {
-      driver.get(baseUrl + getPath());
-      return (T) this;
+        return "";
+    }
 
-   }
+    public void open() {
+        page.navigate(System.getenv("BASE_URL")+getPath());
+    }
+
+    public void headlineCheck(String title) {
+        assertThat(page.getByRole(AriaRole.HEADING)).hasText(title);
+    }
+
 }
