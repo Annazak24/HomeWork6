@@ -1,6 +1,7 @@
 package main;
 
 import com.google.inject.Inject;
+import com.microsoft.playwright.Page;
 import extensions.PlaywrightUiExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -11,67 +12,44 @@ import pages.HousePage;
 public class HousePageTest {
 
     @Inject
-    HousePage housePage;
+    private HousePage housePage;
+
+    @Inject
+    protected Page page;
 
     @Test
-    void housePageTest() {
+    void scenario1_testTeachersSwiper() {
 
-        // Open page
         housePage.open();
-
-        // Scroll to teachers block
         housePage.scrollToTeachers();
-
-        // Wait until teachers are loaded
         housePage.waitForTeachers();
+        Assertions.assertTrue(housePage.teachers().count() > 0,
+                "Teachers list is empty");
 
-        // Verify teachers are displayed
-        Assertions.assertTrue(
-                housePage.teachers().count() > 0,
-                "Teachers list is empty"
-        );
-
-        // Save active teacher before drag
         String beforeDrag = housePage.getActiveTeacherName();
-
-        // Drag teachers slider
         housePage.dragTeachers();
-
-        // Small wait for swiper animation
-        housePage.waitForAnimation();
-
-        // Get active teacher after drag
         String afterDrag = housePage.getActiveTeacherName();
+        Assertions.assertNotEquals(beforeDrag, afterDrag,
+                "Swiper did not move after drag");
 
-        // Verify slider moved
-        Assertions.assertNotEquals(
-                beforeDrag,
-                afterDrag,
-                "Swiper did not move after drag"
-        );
-
-        // Click active teacher
         housePage.clickActiveTeacher();
+        String expectedName = housePage.getActiveTeacherName();
+        String popupName = housePage.popupTitle();
+        Assertions.assertEquals(expectedName, popupName,
+                "Wrong popup opened");
 
         String firstPopupTitle = housePage.popupTitle();
-
-        // Go to next teacher
         housePage.nextTeacher();
-        housePage.waitForAnimation();
-
+        page.waitForTimeout(500);
         String secondPopupTitle = housePage.popupTitle();
+        Assertions.assertNotEquals(firstPopupTitle, secondPopupTitle,
+                "Next teacher did not open different card");
 
-        // Verify next teacher opened
-        Assertions.assertNotEquals(
-                firstPopupTitle,
-                secondPopupTitle,
-                "Next teacher popup did not change"
-        );
 
-        // Go back to previous teacher
         housePage.previousTeacher();
-        housePage.waitForAnimation();
-
-        // Verify p
+        page.waitForTimeout(500);
+        String backPopupTitle = housePage.popupTitle();
+        Assertions.assertEquals(firstPopupTitle, backPopupTitle,
+                "Previous teacher did not return to first card");
     }
 }

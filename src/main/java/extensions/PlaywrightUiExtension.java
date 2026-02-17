@@ -13,16 +13,24 @@ public class PlaywrightUiExtension implements BeforeAllCallback, BeforeEachCallb
     private Page page;
 
     @Override
-    public void beforeAll(ExtensionContext context) throws Exception {
+    public void beforeAll(ExtensionContext context) {
         playwright = Playwright.create();
+
         browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions().setHeadless(false));
+                new BrowserType.LaunchOptions()
+                        .setHeadless(false)
+                        .setArgs(java.util.Arrays.asList("--start-maximized"))
+        );
     }
 
     @Override
     public void beforeEach(ExtensionContext context) {
 
-        browserContext = browser.newContext();
+        browserContext = browser.newContext(
+                new Browser.NewContextOptions()
+                        .setViewportSize(null)
+        );
+
         page = browserContext.newPage();
 
         Guice.createInjector(
@@ -30,6 +38,7 @@ public class PlaywrightUiExtension implements BeforeAllCallback, BeforeEachCallb
                 new GuicePagesModule(page)
         ).injectMembers(context.getRequiredTestInstance());
     }
+
 
 
     @Override

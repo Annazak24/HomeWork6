@@ -10,7 +10,7 @@ import java.util.List;
 @Path("/uslugi-kompaniyam")
 public class CompanyServicesPage extends AbsBasePage {
 
-    @Inject
+@Inject
     public CompanyServicesPage(Page page) {
         super(page);
     }

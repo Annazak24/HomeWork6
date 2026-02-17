@@ -5,100 +5,93 @@ import com.google.inject.Inject;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Mouse;
+import com.microsoft.playwright.options.BoundingBox;
+
 
 @Path("/lessons/clickhouse/")
 public class HousePage extends AbsBasePage {
+
     @Inject
     public HousePage(Page page) {
         super(page);
     }
 
+    private Locator teachersSection() {
+        return page.locator("h2:has-text('Преподаватели')")
+                .locator("..")      // parent
+                .locator("..");     // wrapper
+    }
+
+    private Locator teachersSwiper() {
+        return teachersSection()
+                .locator(".swiper-wrapper")
+                .first();
+    }
+
     public Locator teachers() {
-        return page.locator(
-                "section:has(h2:has-text('Преподаватели')) .swiper-slide"
-        );
-    }
-
-
-
-    public void dragTeachers() {
-
-        Locator wrapper = page.locator(".swiper-wrapper");
-
-        wrapper.waitFor();
-
-        // Get bounding box of swiper
-        var box = wrapper.boundingBox();
-
-        double startX = box.x + box.width - 20;  // start near right edge
-        double endX = box.x + 20;                // drag to left
-        double y = box.y + box.height / 2;
-
-        page.mouse().move(startX, y);
-        page.mouse().down();
-        page.mouse().move(endX, y, new Mouse.MoveOptions().setSteps(15));
-        page.mouse().up();
-    }
-
-
-
-
-    public void clickTeacher(int index) {
-        teachers().nth(index).click();
-    }
-
-    public String popupTitle() {
-        return page.locator(".popup-title").innerText();
-    }
-
-    public void nextTeacher() {
-        page.locator(".popup-next").click();
-    }
-
-    public void previousTeacher() {
-        page.locator(".popup-prev").click();
-    }
-
-    public void acceptCookiesIfPresent() {
-        Locator button = page.locator("text=Принять");
-        if (button.isVisible()) {
-            button.click();
-        }
+        return page.locator(".swiper-slide");
     }
 
     public void scrollToTeachers() {
-        page.locator("h2:has-text('Преподаватели')")
-                .scrollIntoViewIfNeeded();
+        teachersSection().scrollIntoViewIfNeeded();
     }
-
 
     public void waitForTeachers() {
         teachers().first().waitFor();
     }
 
-    public void goToNextSlide() {
-        page.locator(".swiper-pagination-bullet")
-                .nth(1)
+    public String getActiveTeacherName() {
+        return page.locator(".swiper-slide-active p.sc-1s527z5-1").innerText();
+    }
+
+    public void dragTeachers() {
+
+        Locator teachersBlock = page
+                .locator("h2:has-text('Преподаватели')")
+                .locator("xpath=ancestor::section");
+
+        Locator wrapper = teachersBlock.locator(".swiper-wrapper").first();
+        BoundingBox box = wrapper.boundingBox();
+
+        double startX = box.x + box.width - 50;
+        double startY = box.y + box.height / 2;
+
+        double endX = box.x + 50;
+        double endY = startY;
+
+        page.mouse().move(startX, startY);
+        page.mouse().down();
+        page.mouse().move(endX, endY, new Mouse.MoveOptions().setSteps(20));
+        page.mouse().up();
+    }
+
+    public void clickActiveTeacher() {
+        teachersSwiper()
+                .locator(".swiper-slide-active")
                 .click();
     }
 
+    public String popupTitle() {
 
-    public String getActiveTeacherName() {
-        return page.locator(".swiper-slide-active p")
-                .first()
-                .innerText()
-                .trim();
+        Locator popupTitle = page.locator(
+                "#__PORTAL__ .swiper-slide-active .sc-1xbggqf-2 h3");
+        popupTitle.waitFor();
+        return popupTitle.innerText().trim();
     }
 
-
-
-    public void clickActiveTeacher() {
-        page.locator(".swiper-slide-active").click();
+    private Locator popup() {
+        return page.locator("#__PORTAL__");
     }
 
-    public void waitForAnimation() {
-        page.waitForTimeout(800);
+    public void nextTeacher() {
+        popup()
+                .locator("button.sc-1bkbgbz-4")
+                .click(new Locator.ClickOptions().setForce(true));
     }
 
-
+    public void previousTeacher() {
+        popup()
+                .locator("button.sc-1bkbgbz-3")
+                .click(new Locator.ClickOptions().setForce(true));
+    }
 }

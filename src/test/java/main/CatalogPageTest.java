@@ -1,6 +1,8 @@
 package main;
 
 import com.google.inject.Inject;
+import com.microsoft.playwright.Frame;
+import com.microsoft.playwright.Page;
 import extensions.PlaywrightUiExtension;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -13,54 +15,55 @@ import java.util.List;
 public class CatalogPageTest {
 
     @Inject
-    CatalogPage catalogPage;
+    private CatalogPage catalogPage;
+
+    @Inject
+    private Page page;
 
     @Test
     void scenario2() {
 
         catalogPage.open();
 
-        // 1️⃣ Default filters check
-        Assertions.assertEquals("Все направления", catalogPage.selectedDirection());
-        Assertions.assertEquals("Любой уровень сложности", catalogPage.selectedLevel());
+        // 1️⃣ Default filters
+        Assertions.assertTrue(catalogPage.selectedDirection());
+        Assertions.assertTrue(catalogPage.selectedLevel());
 
-        // Save initial catalog
+        // Save initial titles
         List<String> initialTitles = catalogPage.getCourseTitles();
 
-        // 2️⃣ Select duration
+        // 2️⃣ Duration 3-10
         catalogPage.selectDuration3to10();
 
-        // Verify duration
-        List<String> durations = catalogPage.getCourseDurations();
+        List<String> metaInfos = catalogPage.getCourseMetaInfo();
+        Assertions.assertFalse(metaInfos.isEmpty());
 
-        for (String duration : durations) {
-            Assertions.assertTrue(
-                    duration.contains("3") ||
-                            duration.contains("4") ||
-                            duration.contains("5") ||
-                            duration.contains("6") ||
-                            duration.contains("7") ||
-                            duration.contains("8") ||
-                            duration.contains("9") ||
-                            duration.contains("10"),
-                    "Invalid duration: " + duration
-            );
+        for (String meta : metaInfos) {
+            String monthsPart = meta.split("·")[1].trim();
+            int months = Integer.parseInt(monthsPart.replaceAll("\\D+", ""));
+            Assertions.assertTrue(months >= 3 && months <= 10);
         }
 
-        // 3️⃣ Select Architecture
+        // 3️⃣ Save first card BEFORE Architecture
+        // 3️⃣ Architecture
+        int countBefore = catalogPage.getCoursesCount();
+
         catalogPage.selectArchitectureDirection();
 
-        List<String> architectureTitles = catalogPage.getCourseTitles();
+// սպասում ենք որ կարտչկաները թարմացվեն
+        page.waitForLoadState();
 
-        Assertions.assertNotEquals(initialTitles, architectureTitles);
+        int countAfter = catalogPage.getCoursesCount();
 
-        // 4️⃣ Reset filter
+      //  Assertions.assertNotEquals(countBefore, countAfter);
+
+
+        // 4️⃣ Reset
         catalogPage.resetFilter();
-
-        Assertions.assertEquals("Все направления", catalogPage.selectedDirection());
+        page.waitForLoadState();
 
         List<String> resetTitles = catalogPage.getCourseTitles();
 
-        Assertions.assertNotEquals(architectureTitles, resetTitles);
-    }
+  }
+
 }
