@@ -4,7 +4,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.microsoft.playwright.Page;
 import pages.MainPage;
-import pages.NewsPage;
 
 public class GuicePagesModule extends AbstractModule {
 
@@ -19,8 +18,4 @@ public class GuicePagesModule extends AbstractModule {
         return new MainPage(page);
     }
 
-    @Provides
-    public NewsPage newsPage(){
-        return new NewsPage(page);
-    }
 }

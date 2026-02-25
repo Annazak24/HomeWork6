@@ -18,10 +18,13 @@ public class CompanyServicesPage extends AbsBasePage {
     // --- Block "Не нашли нужный курс?" ---
 
     public void clickMoreDetails() {
-        page.getByText("Не нашли нужный курс?")
-                .locator("..")
-                .getByText("Подробнее")
-                .click();
+        Locator block = page.getByText("Не нашли нужный курс?")
+                .locator("..");
+
+        Locator moreDetails = block.locator("a[href='#deposits']");
+
+        moreDetails.scrollIntoViewIfNeeded();
+        moreDetails.click();
     }
 
     // --- Business course page verification ---

@@ -38,4 +38,4 @@ public class SubscriotionPageTest {
         Assertions.assertNotEquals(initialPrice, trialPrice);
         Assertions.assertNotEquals(initialDuration, trialDuration);
     }
-    }
+}

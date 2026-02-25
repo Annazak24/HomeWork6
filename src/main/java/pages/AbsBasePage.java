@@ -9,9 +9,14 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 public abstract class AbsBasePage {
 
     protected Page page;
+    protected String baseUrl;
 
     public AbsBasePage(Page page) {
         this.page = page;
+        this.baseUrl = System.getenv().getOrDefault(
+                "BASE_URL",
+                "https://otus.ru"
+        );
     }
 
     private String getPath() {
@@ -20,16 +25,14 @@ public abstract class AbsBasePage {
             Path path = (Path) clazz.getDeclaredAnnotation(Path.class);
             return path.value();
         }
-
         return "";
     }
 
     public void open() {
-        page.navigate(System.getenv("BASE_URL")+getPath());
+        page.navigate(baseUrl + getPath());
     }
 
     public void headlineCheck(String title) {
         assertThat(page.getByRole(AriaRole.HEADING)).hasText(title);
     }
-
 }

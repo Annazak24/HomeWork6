@@ -4,16 +4,16 @@ import annotations.Path;
 import com.google.inject.Inject;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+
 import java.util.List;
 
 @Path("/catalog/courses")
-public class CatalogPage extends  AbsBasePage{
+public class CatalogPage extends AbsBasePage {
 
-@Inject
+    @Inject
     public CatalogPage(Page page) {
         super(page);
     }
-
 
 
     public boolean selectedDirection() {
@@ -24,42 +24,29 @@ public class CatalogPage extends  AbsBasePage{
         return page.getByLabel("Любой уровень").isChecked();
     }
 
-
-    public Locator durationSliders() {
-        return page.locator("[role='slider']");
-    }
-
     public void selectDuration3to10() {
 
         Locator sliders = page.locator("[role='slider']");
-
         Locator left = sliders.nth(0);
         Locator right = sliders.nth(1);
-
         left.focus();
         left.press("ArrowRight");
         left.press("ArrowRight");
-        left.press("ArrowRight"); // մինչև 3
-
+        left.press("ArrowRight");
         right.focus();
         for (int i = 0; i < 5; i++) {
-            right.press("ArrowLeft"); // իջեցնում ենք մինչև 10
+            right.press("ArrowLeft");
         }
     }
 
     public int getCoursesCount() {
-        return page.locator("a[href*='/lessons/']").count();
+        return page.locator("a[href^='/lessons/']:visible").count();
     }
-
 
     public void selectArchitectureDirection() {
-        page.locator("label", new Page.LocatorOptions()
-                        .setHasText("Архитектура"))
+        page.locator("label", new Page.LocatorOptions().setHasText("Архитектура"))
                 .click();
-
     }
-
-
 
     public void resetFilter() {
         page.getByText("Очистить фильтры").click();
@@ -69,32 +56,14 @@ public class CatalogPage extends  AbsBasePage{
         return page.locator("a[href^='/lessons/']");
     }
 
-
     public List<String> getCourseMetaInfo() {
         return courseCards()
                 .locator("div:has-text('·')")
                 .allInnerTexts();
     }
 
-
-    public String firstCourseTitle() {
-        return page.locator("a[href^='/lessons/'] h6")
-                .first()
-                .innerText();
-    }
-
-
     public List<String> getCourseTitles() {
         return page.locator("div:has(span:has-text('Курс')) h3")
                 .allInnerTexts();
     }
-
-
-
-    public List<String> getCourseDurations() {
-        return page.locator(".course-card .course-duration")
-                .allInnerTexts();
-    }
-
-
 }
