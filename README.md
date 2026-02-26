@@ -1,49 +1,53 @@
-# UI Automated Testing Project for OTUS
+# Homework #6 — UI Automation with Playwright
 
-This repository contains UI automation tests for the **OTUS learning platform** (https://otus.ru)  
-using **Selenium WebDriver** with **Java**, **Cucumber BDD**, and **Page Object Model** with **Google Guice DI**. :contentReference[oaicite:1]{index=1}
+## Description
+UI test automation project implemented using **Playwright (Java)** as part of Homework #6.
 
----
-
-## 📌 Overview
-
-This project automates end-to-end UI scenarios, including:
-
-* Searching for courses by exact name  
-* Finding earliest and latest courses  
-* Filtering and comparing preparatory courses (cheapest & most expensive) 
-
-The automation framework is built using BDD principles with Cucumber feature files written in Gherkin. :contentReference[oaicite:2]{index=2}
+The project follows **Page Object Model**, uses **Dependency Injection (Guice)** and fully complies with the homework requirements.
 
 ---
 
-## 🚀 Technology Stack
-
-The project uses the following technologies:
-
-| Category | Technology |
-|----------|------------|
-| Language | Java 24 |
-| Test Framework | JUnit Jupiter 5 |
-| BDD | Cucumber |
-| Browser Automation | Selenium WebDriver 4 |
-| Dependency Injection | Google Guice |
-| HTML Parsing | Jsoup |
-| Build Tool | Maven |
-| Additional | WebDriverManager, AssertJ | :contentReference[oaicite:3]{index=3}
+## Implemented Scenarios
+- Teachers block interaction
+- Courses catalog filtering
+- Company services navigation
+- Subscription and payment flow
 
 ---
 
-## 📁 Project Structure
-project/
-├── src/
-│ ├── main/java/
-│ │ ├── pages/ # Page Object classes
-│ │ ├── extensions/ # JUnit extensions
-│ │ ├── annotations/ # Custom annotations
-│ │ ├── dto/ # Data Transfer Objects
-│ │ └── waiters/ # Custom wait utilities
-│ └── test/java/
-│ └── main / # Cucumber step definitions & runners
-├── pom.xml
-└── README.md
+## Technologies
+- Java
+- Playwright
+- JUnit 5
+- Guice (Dependency Injection)
+- Maven
+
+---
+
+## Dependency Injection
+The project uses **Guice** for Dependency Injection.
+
+All Playwright resources (Browser, Context, Page) and Page Objects are created in fixtures and injected into tests via DI.  
+The `@UsePlaywright` annotation is **not used**.
+
+---
+
+## Project Structure
+- `pages` — Page Object classes
+- `extensions` — Playwright lifecycle management
+- `modules` — Guice configuration
+- `tests` — UI tests
+
+---
+
+## Playwright Tracing
+Playwright tracing is enabled for all tests.  
+Trace archives are stored in the project root.
+
+---
+
+## Run Tests
+Tests can be executed from the console:
+
+```bash
+mvn clean test
