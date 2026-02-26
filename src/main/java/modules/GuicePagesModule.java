@@ -17,5 +17,4 @@ public class GuicePagesModule extends AbstractModule {
     public MainPage mainPage() {
         return new MainPage(page);
     }
-
 }

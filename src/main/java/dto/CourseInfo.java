@@ -32,4 +32,3 @@ public class CourseInfo {
         return price;
     }
 }
-

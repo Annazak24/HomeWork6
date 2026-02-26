@@ -40,7 +40,6 @@ public class PlaywrightUiExtension implements BeforeAllCallback, BeforeEachCallb
     }
 
 
-
     @Override
     public void afterAll(ExtensionContext context) throws Exception {
         browser.close();

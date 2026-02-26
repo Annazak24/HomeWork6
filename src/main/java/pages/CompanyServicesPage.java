@@ -10,12 +10,11 @@ import java.util.List;
 @Path("/uslugi-kompaniyam")
 public class CompanyServicesPage extends AbsBasePage {
 
-@Inject
+    @Inject
     public CompanyServicesPage(Page page) {
         super(page);
     }
 
-    // --- Block "Не нашли нужный курс?" ---
 
     public void clickMoreDetails() {
         Locator block = page.getByText("Не нашли нужный курс?")
@@ -27,14 +26,12 @@ public class CompanyServicesPage extends AbsBasePage {
         moreDetails.click();
     }
 
-    // --- Business course page verification ---
 
     public boolean isBusinessCoursePageOpened() {
         return page.title().contains("Разработка курса для бизнеса")
                 || page.url().contains("razrabotka");
     }
 
-    // --- Directions block ---
 
     public Locator directions() {
         return page.locator("a[href*='catalog']");
@@ -51,7 +48,6 @@ public class CompanyServicesPage extends AbsBasePage {
         return directionName;
     }
 
-    // --- After direction click (catalog) ---
 
     public boolean isCatalogOpened() {
         return page.url().contains("/catalog");

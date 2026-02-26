@@ -22,36 +22,41 @@ public class CatalogPageTest {
     @Test
     void scenario2() {
 
+
         catalogPage.open();
         Assertions.assertTrue(catalogPage.selectedDirection());
         Assertions.assertTrue(catalogPage.selectedLevel());
 
 
-        List<String> initialTitles = catalogPage.getCourseTitles();
+        int initialCount = catalogPage.getCoursesCount();
         catalogPage.selectDuration3to10();
+        page.waitForCondition(() ->
+                catalogPage.getCoursesCount() != initialCount);
+
+
         List<String> metaInfos = catalogPage.getCourseMetaInfo();
         Assertions.assertFalse(metaInfos.isEmpty());
+
+
         for (String meta : metaInfos) {
             String monthsPart = meta.split("·")[1].trim();
             int months = Integer.parseInt(monthsPart.replaceAll("\\D+", ""));
-            page.waitForURL("**duration=3-10**");
+
             Assertions.assertTrue(
                     months >= 3 && months <= 10,
-                    "Course duration is outside filter range: " + meta
-            );
+                    "Course duration is outside filter range: " + meta);
         }
 
-
-        int countBefore = catalogPage.getCoursesCount();
+        int countBeforeDirection = catalogPage.getCoursesCount();
         catalogPage.selectArchitectureDirection();
-        page.waitForCondition(() -> catalogPage.getCoursesCount() != countBefore);
-        int countAfter = catalogPage.getCoursesCount();
-        Assertions.assertNotEquals(countBefore, countAfter);
+
+        page.waitForCondition(() ->
+                catalogPage.getCoursesCount() != countBeforeDirection);
+        int countAfterDirection = catalogPage.getCoursesCount();
+        Assertions.assertNotEquals(countBeforeDirection, countAfterDirection);
 
 
         catalogPage.resetFilter();
         page.waitForLoadState();
-        List<String> resetTitles = catalogPage.getCourseTitles();
-
     }
 }

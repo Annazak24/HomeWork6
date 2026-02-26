@@ -1,21 +1,28 @@
 package main;
 
 import com.google.inject.Inject;
+import com.microsoft.playwright.Page;
 import extensions.PlaywrightUiExtension;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import pages.AbsBasePage;
 import pages.SubscriptionPage;
 
 
 @ExtendWith(PlaywrightUiExtension.class)
 public class SubscriotionPageTest {
+
     @Inject
     private SubscriptionPage subscriptionPage;
 
+    @Inject
+    protected Page page;
+
+    @Test
     void scenario4() {
 
         subscriptionPage.open();
-
         Assertions.assertTrue(subscriptionPage.areSubscriptionsVisible());
 
         subscriptionPage.clickMoreDetails();
@@ -26,12 +33,10 @@ public class SubscriotionPageTest {
 
         subscriptionPage.clickBuy();
         Assertions.assertTrue(subscriptionPage.isPaymentPageOpened());
-
         String initialPrice = subscriptionPage.getPrice();
         String initialDuration = subscriptionPage.getDuration();
 
         subscriptionPage.selectTrial();
-
         String trialPrice = subscriptionPage.getPrice();
         String trialDuration = subscriptionPage.getDuration();
 

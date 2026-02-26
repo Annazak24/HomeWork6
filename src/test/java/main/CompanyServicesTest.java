@@ -24,7 +24,7 @@ public class CompanyServicesTest {
         companyServicesPage.open();
 
         companyServicesPage.clickMoreDetails();
-        
+
         Locator depositsBlock = page.locator("#deposits");
         depositsBlock.waitFor();
 
