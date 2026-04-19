@@ -2,6 +2,7 @@ pipeline {
     agent {
         docker {
             image 'maven:3.9.4-eclipse-temurin-21'
+            args '--ipc=host'
         }
     }
 
@@ -12,13 +13,20 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                deleteDir()
                 checkout scm
             }
         }
 
-        stage('Run Tests') {
+        stage('Install Playwright Browsers') {
             steps {
-                sh 'mvn clean test -Dmaven.test.failure.ignore=true'
+                sh 'mvn -q exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"'
+            }
+        }
+
+        stage('Run UI Tests') {
+            steps {
+                sh 'mvn clean test -Dtest=CatalogPageTest,CompanyServicesTest,HousePageTest,SubscriptionPageTest -Dmaven.test.failure.ignore=true'
                 sh 'echo "========================="'
                 sh 'echo "ALLURE DEBUG START"'
                 sh 'echo "========================="'
