@@ -35,5 +35,6 @@ pipeline {
                 results: [[path: 'target/allure-results'], [path: 'allure-results']]
             ])
         }
+
     }
 }
