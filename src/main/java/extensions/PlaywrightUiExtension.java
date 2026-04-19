@@ -1,54 +1,72 @@
 package extensions;
+
 import com.google.inject.Guice;
-import com.microsoft.playwright.*;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 import modules.GuiceModule;
 import modules.GuicePagesModule;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
-public class PlaywrightUiExtension implements BeforeAllCallback, BeforeEachCallback, AfterEachCallback, AfterAllCallback {
+import java.util.List;
 
-    private Playwright playwright;
-    private BrowserContext browserContext;
-    private Browser browser;
-    private Page page;
+public class PlaywrightUiExtension implements BeforeAllCallback, BeforeEachCallback,
+      AfterEachCallback, AfterAllCallback {
 
-    @Override
-    public void beforeAll(ExtensionContext context) {
-        playwright = Playwright.create();
+   private Playwright playwright;
+   private Browser browser;
+   private BrowserContext browserContext;
+   private Page page;
 
-        browser = playwright.chromium().launch(
-                new BrowserType.LaunchOptions()
-                        .setHeadless(false)
-                        .setArgs(java.util.Arrays.asList("--start-maximized"))
-        );
-    }
+   @Override
+   public void beforeAll(ExtensionContext context) {
+      playwright = Playwright.create();
 
-    @Override
-    public void beforeEach(ExtensionContext context) {
+      browser = playwright.chromium().launch(
+            new BrowserType.LaunchOptions()
+                  .setHeadless(true)
+                  .setArgs(List.of("--no-sandbox"))
+      );
+   }
 
-        browserContext = browser.newContext(
-                new Browser.NewContextOptions()
-                        .setViewportSize(null)
-        );
+   @Override
+   public void beforeEach(ExtensionContext context) {
+      browserContext = browser.newContext(
+            new Browser.NewContextOptions()
+                  .setViewportSize(1920, 1080)
+      );
 
-        page = browserContext.newPage();
+      page = browserContext.newPage();
 
-        Guice.createInjector(
-                new GuiceModule(page),
-                new GuicePagesModule(page)
-        ).injectMembers(context.getRequiredTestInstance());
-    }
+      Guice.createInjector(
+            new GuiceModule(page),
+            new GuicePagesModule(page)
+      ).injectMembers(context.getRequiredTestInstance());
+   }
 
+   @Override
+   public void afterEach(ExtensionContext context) {
+      if (page != null) {
+         page.close();
+      }
+      if (browserContext != null) {
+         browserContext.close();
+      }
+   }
 
-    @Override
-    public void afterAll(ExtensionContext context) throws Exception {
-        browser.close();
-        playwright.close();
-    }
-
-    @Override
-    public void afterEach(ExtensionContext context) throws Exception {
-        page.close();
-        browserContext.close();
-    }
+   @Override
+   public void afterAll(ExtensionContext context) {
+      if (browser != null) {
+         browser.close();
+      }
+      if (playwright != null) {
+         playwright.close();
+      }
+   }
 }
