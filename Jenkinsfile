@@ -18,24 +18,9 @@ pipeline {
             }
         }
 
-        stage('Install Playwright Browsers') {
-            steps {
-                sh 'mvn -q exec:java -Dexec.mainClass=com.microsoft.playwright.CLI -Dexec.args="install --with-deps chromium"'
-            }
-        }
-
         stage('Run UI Tests') {
             steps {
                 sh 'mvn clean test -Dtest=CatalogPageTest,CompanyServicesTest,HousePageTest,SubscriptionPageTest -Dmaven.test.failure.ignore=true'
-                sh 'echo "========================="'
-                sh 'echo "ALLURE DEBUG START"'
-                sh 'echo "========================="'
-                sh 'ls -la target || true'
-                sh 'ls -la target/allure-results || true'
-                sh 'find target/allure-results -type f || true'
-                sh 'echo "========================="'
-                sh 'echo "ALLURE DEBUG END"'
-                sh 'echo "========================="'
             }
         }
     }
