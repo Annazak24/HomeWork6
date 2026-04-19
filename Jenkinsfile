@@ -19,20 +19,23 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh 'mvn clean test -Dmaven.test.failure.ignore=true'
+                sh 'echo "=== target/allure-results ==="'
+                sh 'ls -la target/allure-results || true'
+                sh 'find target/allure-results -type f || true'
             }
         }
     }
 
     post {
         always {
-            archiveArtifacts artifacts: '**/allure-results/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'target/allure-results/**', allowEmptyArchive: true
 
             allure([
                 includeProperties: false,
                 jdk: '',
                 properties: [],
                 reportBuildPolicy: 'ALWAYS',
-                results: [[path: 'target/allure-results'], [path: 'allure-results']]
+                results: [[path: 'target/allure-results']]
             ])
         }
     }
