@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'maven:3.9.4-eclipse-temurin-21'
+            image 'mcr.microsoft.com/playwright/java:v1.49.0-noble'
             args '--ipc=host'
         }
     }
