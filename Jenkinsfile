@@ -19,9 +19,15 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh 'mvn clean test -Dmaven.test.failure.ignore=true'
-                sh 'echo "=== target/allure-results ==="'
+                sh 'echo "========================="'
+                sh 'echo "ALLURE DEBUG START"
+                sh 'echo "========================="'
+                sh 'ls -la target || true'
                 sh 'ls -la target/allure-results || true'
                 sh 'find target/allure-results -type f || true'
+                sh 'echo "========================="'
+                sh 'echo "ALLURE DEBUG END"
+                sh 'echo "========================="'
             }
         }
     }
