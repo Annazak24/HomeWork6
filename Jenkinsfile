@@ -26,7 +26,7 @@ pipeline {
                 sh 'ls -la target/allure-results || true'
                 sh 'find target/allure-results -type f || true'
                 sh 'echo "========================="'
-                sh 'echo "ALLURE DEBUG END"
+                sh 'echo "ALLURE DEBUG END"'
                 sh 'echo "========================="'
             }
         }
