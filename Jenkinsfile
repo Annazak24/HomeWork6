@@ -20,7 +20,7 @@ pipeline {
             steps {
                 sh 'mvn clean test -Dmaven.test.failure.ignore=true'
                 sh 'echo "========================="'
-                sh 'echo "ALLURE DEBUG START"
+                sh 'echo "ALLURE DEBUG START"'
                 sh 'echo "========================="'
                 sh 'ls -la target || true'
                 sh 'ls -la target/allure-results || true'
