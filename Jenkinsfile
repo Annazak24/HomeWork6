@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'mcr.microsoft.com/playwright/java:v1.49.0-noble'
-            args '--ipc=host'
+            args '--ipc=host -v /var/jenkins_home/.m2:/root/.m2'
         }
     }
 
