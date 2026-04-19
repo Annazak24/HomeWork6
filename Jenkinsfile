@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker {
-            image 'mcr.microsoft.com/playwright/java:v1.49.0-noble'
+            image 'mcr.microsoft.com/playwright/java:v1.58.0-noble'
             args '--ipc=host -v /var/jenkins_home/.m2:/root/.m2'
         }
     }
@@ -18,9 +18,32 @@ pipeline {
             }
         }
 
+        stage('Prepare config') {
+            steps {
+                script {
+                    def cfg = readYaml text: params.CONFIG
+
+                    env.BROWSER = cfg.browser?.toString()?.trim()
+                    env.BASE_URL = cfg.base_url?.toString()?.trim()
+                    env.REMOTE = cfg.remote?.toString()?.trim()
+
+                    echo "Browser: ${env.BROWSER}"
+                    echo "Base URL: ${env.BASE_URL}"
+                    echo "Remote: ${env.REMOTE}"
+                }
+            }
+        }
+
         stage('Run UI Tests') {
             steps {
-                sh 'mvn clean test -Dtest=CatalogPageTest,CompanyServicesTest,HousePageTest,SubscriptionPageTest -Dmaven.test.failure.ignore=true'
+                sh """
+                    mvn test \
+                      -Dtest=CatalogPageTest,CompanyServicesTest,HousePageTest,SubscriptionPageTest \
+                      -Dbrowser=${env.BROWSER} \
+                      -Dbase.url=${env.BASE_URL} \
+                      -Dremote=${env.REMOTE} \
+                      -Dmaven.test.failure.ignore=true
+                """
             }
         }
     }
