@@ -1,7 +1,8 @@
 pipeline {
     agent {
-        docker {
-            image 'mcr.microsoft.com/playwright/java:v1.58.0-noble'
+        dockerfile {
+            filename 'Dockerfile'
+            additionalBuildArgs ''
             args '--ipc=host -v /var/jenkins_home/.m2:/root/.m2'
         }
     }
@@ -57,14 +58,17 @@ remote: false''',
 
         stage('Run UI Tests') {
             steps {
-                sh """
+                sh '''
+                    mkdir -p target/allure-results
+
                     mvn test \
                       -Dtest=CatalogPageTest,CompanyServicesTest,HousePageTest,SubscriptionPageTest \
-                      -Dbrowser=${env.BROWSER} \
-                      -Dbase.url=${env.BASE_URL} \
-                      -Dremote=${env.REMOTE} \
-                      -Dmaven.test.failure.ignore=true
-                """
+                      -Dbrowser="${BROWSER}" \
+                      -Dbase.url="${BASE_URL}" \
+                      -Dremote="${REMOTE}" \
+                      -Dmaven.test.failure.ignore=true \
+                      -Dallure.results.directory=target/allure-results
+                '''
             }
         }
     }
